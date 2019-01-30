@@ -7,6 +7,7 @@ module Orders
     def initailize(uuid)
       @state  = :draft
       @uuid   = uuid
+      @number = nil
     end
 
     def submit(order_number)
@@ -23,7 +24,8 @@ module Orders
       raise NotAllowed if shipped?
 
       apply(Orders::OrderShipped.strict(data: {
-        order_uuid: @uuid
+        order_uuid:   @uuid,
+        order_number: @number
       }))
     end
 
@@ -42,7 +44,8 @@ module Orders
     end
 
     def apply_order_submitted(event)
-      @state = :submitted
+      @state  = :submitted
+      @number = event.data[:order_number]
     end
 
     def apply_order_shipped(event)

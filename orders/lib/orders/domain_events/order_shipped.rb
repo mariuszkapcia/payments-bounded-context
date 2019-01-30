@@ -1,7 +1,8 @@
 module Orders
   class OrderShipped < RailsEventStore::Event
     SCHEMA = {
-      order_uuid: String
+      order_uuid:   String,
+      order_number: String
     }.freeze
 
     def self.strict(data:)
