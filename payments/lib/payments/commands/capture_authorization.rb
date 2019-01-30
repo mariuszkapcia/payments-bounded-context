@@ -1,5 +1,5 @@
 module Payments
-  class CaptureCreditCardAuthorization
+  class CaptureAuthorization
     include Command
 
     attr_accessor :transaction_identifier
