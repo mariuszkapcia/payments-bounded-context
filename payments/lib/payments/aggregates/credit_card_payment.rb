@@ -32,10 +32,30 @@ module Payments
       }))
     end
 
+    def capture
+      raise InvalidOperation unless authorized?
+      raise InvalidOperation if captured?
+
+      @payment_gateway.capture(@payment_gateway_transaction_identifier)
+
+      apply(Payments::CaptureSucceeded.strict(data: {
+        transaction_identifier: @transaction_identifier
+      }))
+    rescue VisaPaymentGateway::CaptureFailed,
+           MastercardPaymentGateway::CaptureFailed
+      apply(Payments::CaptureFailed.strict(data: {
+        transaction_identifier: @transaction_identifier
+      }))
+    end
+
     private
 
     def authorized?
       @state == :authorized
+    end
+
+    def captured?
+      @state == :captured
     end
 
     def apply_credit_card_authorization_succeeded(event)
@@ -45,6 +65,13 @@ module Payments
     end
 
     def apply_credit_card_authorization_failed(event)
+    end
+
+    def apply_capture_succeeded(event)
+      @state = :captured
+    end
+
+    def apply_capture_failed(event)
     end
   end
 end
