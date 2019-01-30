@@ -10,7 +10,8 @@ module PaymentsBoundedContext
   class Application < Rails::Application
     config.load_defaults 5.2
 
-    config.paths.add 'lib/', eager_load: true
+    config.paths.add 'lib/',         eager_load: true
+    config.paths.add 'command/',     eager_load: true
     config.paths.add 'payments/lib', eager_load: true
   end
 end
