@@ -1,7 +1,8 @@
 module Payments
   class CreditCardAuthorizationFailed < RailsEventStore::Event
     SCHEMA = {
-      order_number: String
+      transaction_identifier: String,
+      order_number:           String
     }.freeze
 
     def self.strict(data:)
