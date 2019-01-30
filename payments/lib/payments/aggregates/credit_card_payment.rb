@@ -58,13 +58,13 @@ module Payments
       @state == :captured
     end
 
-    def apply_credit_card_authorization_succeeded(event)
+    def apply_authorization_succeeded(event)
       @transaction_identifier                 = event.data[:transaction_identifier]
       @payment_gateway_transaction_identifier = event.data[:payment_gateway_transaction_identifier]
       @state                                  = :authorized
     end
 
-    def apply_credit_card_authorization_failed(event)
+    def apply_authorization_failed(event)
     end
 
     def apply_capture_succeeded(event)
