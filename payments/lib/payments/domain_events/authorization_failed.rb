@@ -1,5 +1,5 @@
 module Payments
-  class CreditCardAuthorizationFailed < RailsEventStore::Event
+  class AuthorizationFailed < RailsEventStore::Event
     SCHEMA = {
       transaction_identifier: String,
       order_number:           String

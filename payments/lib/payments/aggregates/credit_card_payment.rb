@@ -17,15 +17,16 @@ module Payments
       payment_gateway_transaction_identifier = @payment_gateway.authorize(credit_card_token, amount, currency)
 
       # NOTE: Should I include amount and currency here?
-      apply(Payments::CreditCardAuthorizationSucceeded.strict(data: {
+      apply(Payments::AuthorizationSucceeded.strict(data: {
         transaction_identifier:                 @transaction_identifier,
         payment_gateway_transaction_identifier: payment_gateway_transaction_identifier,
         order_number:                           order_number,
         amount:                                 amount,
         currency:                               currency
       }))
-    rescue Payments::AuthorizationFailed
-      apply(Payments::CreditCardAuthorizationFailed.strict(data: {
+    rescue VisaPaymentGateway::AuthorizationFailed,
+           MastercardPaymentGateway::AuthorizationFailed
+      apply(Payments::AuthorizationFailed.strict(data: {
         transaction_identifier: @transaction_identifier,
         order_number:           order_number
       }))

@@ -1,5 +1,5 @@
 module Payments
-  class CreditCardAuthorizationSucceeded < RailsEventStore::Event
+  class AuthorizationSucceeded < RailsEventStore::Event
     SCHEMA = {
       transaction_identifier:                 String,
       payment_gateway_transaction_identifier: String,

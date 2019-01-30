@@ -19,13 +19,13 @@ module Payments
 
     private
 
-    def initialize(event_store, payment_gateway: Payments::VisaPaymentGateway.new)
+    def initialize(event_store, payment_gateway: VisaPaymentGateway.new)
       @event_store     = event_store
       @payment_gateway = payment_gateway
     end
 
     def with_payment(transaction_identifier, payment_gateway:)
-      Payments::CreditCardPayment.new(transaction_identifier, payment_gateway: payment_gateway).tap do |payment|
+      CreditCardPayment.new(transaction_identifier, payment_gateway: payment_gateway).tap do |payment|
         load_payment(transaction_identifier, payment)
         yield payment
         store_payment(payment)
