@@ -1,4 +1,11 @@
 module Payments
+  # NOTE: We need to decide what to use as aggregate identifier here (part of the stream name).
+  #       I can see two possible options:
+  #       1) We can add internal transaction identifier to the command and in addition keep payment gateway
+  #          transaction identifier as part of the aggregate state. In this case, we can call payment gateway inside
+  #          aggregate.
+  #       2) We can have only payment gateway transaction identifier but in this case, we need to call payment gateway
+  #          from command handler because we need transaction identifier to store aggregate.
   class OnAuthorizeCreditCard
     def call(command)
       command.verify!
