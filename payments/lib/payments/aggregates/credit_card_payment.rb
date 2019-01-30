@@ -42,5 +42,8 @@ module Payments
       @payment_gateway_transaction_identifier = event.data[:payment_gateway_transaction_identifier]
       @state                                  = :authorized
     end
+
+    def apply_credit_card_authorization_failed(event)
+    end
   end
 end
