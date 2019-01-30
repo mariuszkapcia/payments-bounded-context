@@ -10,6 +10,7 @@ require_dependency 'payments/command_handlers/on_void_authorization.rb'
 require_dependency 'payments/commands/authorize_credit_card.rb'
 require_dependency 'payments/commands/capture_authorization.rb'
 require_dependency 'payments/commands/void_authorization.rb'
+require_dependency 'payments/commands/switch_to_fallback_payment_gateway.rb'
 
 require_dependency 'payments/domain_events/authorization_succeeded.rb'
 require_dependency 'payments/domain_events/authorization_failed.rb'
