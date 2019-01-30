@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_01_30_211936) do
+ActiveRecord::Schema.define(version: 2019_01_30_221435) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -50,6 +50,7 @@ ActiveRecord::Schema.define(version: 2019_01_30_211936) do
     t.string "currency"
     t.datetime "timestamp"
     t.string "state"
+    t.string "payment_gateway_identifier"
   end
 
   create_table "visa_payment_gateway_transactions", force: :cascade do |t|
