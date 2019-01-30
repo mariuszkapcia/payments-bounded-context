@@ -4,9 +4,10 @@ module Payments
       command.verify!
 
       ActiveRecord::Base.transaction do
-        with_payment(command.transaction_identifier, payment_gateway: @payment_gateway) do |payment|
-          payment.capture(command.transaction_identifier)
-        end
+        credit_card_payment = CreditCardPayment.new(command.transaction_identifier, payment_gateway: @payment_gateway)
+        credit_card_payment.load(stream_name(command.transaction_identifier), event_store: @event_store)
+        credit_card_payment.capture
+        credit_card_payment.store(event_store: @event_store)
       end
     end
 
@@ -15,22 +16,6 @@ module Payments
     def initialize(event_store, payment_gateway: VisaPaymentGateway.new)
       @event_store     = event_store
       @payment_gateway = payment_gateway
-    end
-
-    def with_payment(transaction_identifier, payment_gateway:)
-      CreditCardPayment.new(transaction_identifier, payment_gateway: payment_gateway).tap do |payment|
-        load_payment(transaction_identifier, payment)
-        yield payment
-        store_payment(payment)
-      end
-    end
-
-    def load_payment(transaction_identifier, payment)
-      payment.load(stream_name(transaction_identifier), event_store: @event_store)
-    end
-
-    def store_payment(payment)
-      payment.store(event_store: @event_store)
     end
 
     def stream_name(transaction_identifier)
