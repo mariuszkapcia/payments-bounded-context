@@ -26,7 +26,8 @@ module Payments
       }))
     rescue Payments::AuthorizationFailed
       apply(Payments::CreditCardAuthorizationFailed.strict(data: {
-        order_number: order_number
+        transaction_identifier: @transaction_identifier,
+        order_number:           order_number
       }))
     end
 
