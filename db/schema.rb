@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_01_30_163804) do
+ActiveRecord::Schema.define(version: 2019_01_30_163806) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -33,6 +33,22 @@ ActiveRecord::Schema.define(version: 2019_01_30_163804) do
     t.index ["created_at"], name: "index_event_store_events_in_streams_on_created_at"
     t.index ["stream", "event_id"], name: "index_event_store_events_in_streams_on_stream_and_event_id", unique: true
     t.index ["stream", "position"], name: "index_event_store_events_in_streams_on_stream_and_position", unique: true
+  end
+
+  create_table "mastercard_payment_gateway_transactions", force: :cascade do |t|
+    t.string "identifier", null: false
+    t.string "credit_card_token", null: false
+    t.integer "amount", null: false
+    t.string "currency", null: false
+    t.string "state", null: false
+  end
+
+  create_table "visa_payment_gateway_transactions", force: :cascade do |t|
+    t.string "identifier", null: false
+    t.string "credit_card_token", null: false
+    t.integer "amount", null: false
+    t.string "currency", null: false
+    t.string "state", null: false
   end
 
 end

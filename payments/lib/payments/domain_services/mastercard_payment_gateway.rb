@@ -1,5 +1,6 @@
 module Payments
   class MastercardPaymentGateway
+    # NOTE: We need it because we have a fake payment gateway and we need a place to store transactions information.
     class Transaction < ActiveRecord::Base
       self.table_name = 'mastercard_payment_gateway_transactions'
     end
