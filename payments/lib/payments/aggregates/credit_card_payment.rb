@@ -48,6 +48,22 @@ module Payments
       }))
     end
 
+    def void
+      raise InvalidOperation unless authorized?
+      raise InvalidOperation if voided?
+
+      @payment_gateway.void(@payment_gateway_transaction_identifier)
+
+      apply(Payments::VoidSucceeded.strict(data: {
+        transaction_identifier: @transaction_identifier
+      }))
+    rescue VisaPaymentGateway::VoidFailed,
+           MastercardPaymentGateway::VoidFailed
+      apply(Payments::VoidFailed.strict(data: {
+        transaction_identifier: @transaction_identifier
+      }))
+    end
+
     private
 
     def authorized?
@@ -56,6 +72,10 @@ module Payments
 
     def captured?
       @state == :captured
+    end
+
+    def voided?
+      @state == :voided
     end
 
     def apply_authorization_succeeded(event)
@@ -72,6 +92,13 @@ module Payments
     end
 
     def apply_capture_failed(event)
+    end
+
+    def apply_void_succeeded(event)
+      @state = :voided
+    end
+
+    def apply_void_failed(event)
     end
   end
 end
