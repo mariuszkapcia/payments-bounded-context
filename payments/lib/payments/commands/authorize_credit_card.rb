@@ -1,5 +1,7 @@
 module Payments
   class AuthorizeCreditCard
+    include Command
+
     attr_accessor :credit_card_token
     attr_accessor :amount
     attr_accessor :order_number
