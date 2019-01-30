@@ -19,6 +19,15 @@ module Orders
       }))
     end
 
+    def cancel
+      raise NotAllowed unless draft? || submitted?
+
+      apply(Orders::OrderCancelled.strict(data: {
+        order_uuid:   @uuid,
+        order_number: @number
+      }))
+    end
+
     def ship
       raise NotAllowed unless submitted?
       raise NotAllowed if shipped?
@@ -39,6 +48,10 @@ module Orders
       @state == :submitted
     end
 
+    def cancelled?
+      @state == :cancelled
+    end
+
     def shipped?
       @state == :shipped
     end
@@ -46,6 +59,10 @@ module Orders
     def apply_order_submitted(event)
       @state  = :submitted
       @number = event.data[:order_number]
+    end
+
+    def apply_order_cancelled(event)
+      @state = :cancelled
     end
 
     def apply_order_shipped(event)
