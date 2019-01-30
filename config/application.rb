@@ -13,6 +13,7 @@ module PaymentsBoundedContext
     config.paths.add 'lib/',           eager_load: true
     config.paths.add 'command/',       eager_load: true
     config.paths.add 'payments/lib',   eager_load: true
+    config.paths.add 'orders/lib',     eager_load: true
     config.paths.add 'fulfilment/lib', eager_load: true
   end
 end
