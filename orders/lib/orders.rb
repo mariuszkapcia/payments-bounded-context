@@ -8,3 +8,5 @@ require_dependency 'orders/commands/ship_order.rb'
 
 require_dependency 'orders/domain_events/order_submitted.rb'
 require_dependency 'orders/domain_events/order_shipped.rb'
+
+require_dependency 'orders/domain_services/order_number_generator.rb'
