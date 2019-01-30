@@ -4,6 +4,7 @@ end
 require_dependency 'orders/aggregates/order.rb'
 
 require_dependency 'orders/command_handlers/on_submit_order.rb'
+require_dependency 'orders/command_handlers/on_ship_order.rb'
 
 require_dependency 'orders/commands/submit_order.rb'
 require_dependency 'orders/commands/ship_order.rb'
