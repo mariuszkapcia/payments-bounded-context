@@ -1,7 +1,8 @@
 module Payments
   class CaptureSucceeded < RailsEventStore::Event
     SCHEMA = {
-      transaction_identifier: String
+      transaction_identifier: String,
+      order_number:           String
     }.freeze
 
     def self.strict(data:)

@@ -8,6 +8,7 @@ module Payments
       @transaction_identifier                 = transaction_identifier
       @payment_gateway_transaction_identifier = nil
       @payment_gateway                        = payment_gateway
+      @order_number                           = nil
       @state                                  = :unauthorized
     end
 
@@ -39,12 +40,14 @@ module Payments
       @payment_gateway.capture(@payment_gateway_transaction_identifier)
 
       apply(Payments::CaptureSucceeded.strict(data: {
-        transaction_identifier: @transaction_identifier
+        transaction_identifier: @transaction_identifier,
+        order_number:           @order_number
       }))
     rescue VisaPaymentGateway::CaptureFailed,
            MastercardPaymentGateway::CaptureFailed
       apply(Payments::CaptureFailed.strict(data: {
-        transaction_identifier: @transaction_identifier
+        transaction_identifier: @transaction_identifier,
+        order_number:           @order_number
       }))
     end
 
@@ -55,12 +58,14 @@ module Payments
       @payment_gateway.void(@payment_gateway_transaction_identifier)
 
       apply(Payments::VoidSucceeded.strict(data: {
-        transaction_identifier: @transaction_identifier
+        transaction_identifier: @transaction_identifier,
+        order_number:           @order_number
       }))
     rescue VisaPaymentGateway::VoidFailed,
            MastercardPaymentGateway::VoidFailed
       apply(Payments::VoidFailed.strict(data: {
-        transaction_identifier: @transaction_identifier
+        transaction_identifier: @transaction_identifier,
+        order_number:           @order_number
       }))
     end
 
@@ -81,6 +86,7 @@ module Payments
     def apply_authorization_succeeded(event)
       @transaction_identifier                 = event.data[:transaction_identifier]
       @payment_gateway_transaction_identifier = event.data[:payment_gateway_transaction_identifier]
+      @order_number                           = event.data[:order_number]
       @state                                  = :authorized
     end
 
