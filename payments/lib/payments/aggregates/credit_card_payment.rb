@@ -9,7 +9,7 @@ module Payments
       @payment_gateway_transaction_identifier = nil
       @payment_gateway                        = payment_gateway
       @order_number                           = nil
-      @state                                  = :unauthorized
+      @state                                  = :none
     end
 
     def authorize(credit_card_token, amount, currency, order_number)
