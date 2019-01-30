@@ -7,6 +7,7 @@ module Payments
     def initialize(transaction_identifier, payment_gateway:)
       @transaction_identifier                 = transaction_identifier
       @payment_gateway_transaction_identifier = nil
+      @payment_gateway_identifier             = nil
       @payment_gateway                        = payment_gateway
       @order_number                           = nil
       @state                                  = :none
@@ -21,6 +22,7 @@ module Payments
       apply(Payments::AuthorizationSucceeded.strict(data: {
         transaction_identifier:                 @transaction_identifier,
         payment_gateway_transaction_identifier: payment_gateway_transaction_identifier,
+        payment_gateway_identifier:             @payment_gateway::IDENTIFIER,
         order_number:                           order_number,
         amount:                                 amount,
         currency:                               currency
@@ -28,8 +30,9 @@ module Payments
     rescue VisaPaymentGateway::AuthorizationFailed,
            MastercardPaymentGateway::AuthorizationFailed
       apply(Payments::AuthorizationFailed.strict(data: {
-        transaction_identifier: @transaction_identifier,
-        order_number:           order_number
+        transaction_identifier:     @transaction_identifier,
+        payment_gateway_identifier: @payment_gateway::IDENTIFIER,
+        order_number:               order_number
       }))
     end
 
@@ -40,14 +43,16 @@ module Payments
       @payment_gateway.capture(@payment_gateway_transaction_identifier)
 
       apply(Payments::CaptureSucceeded.strict(data: {
-        transaction_identifier: @transaction_identifier,
-        order_number:           @order_number
+        transaction_identifier:     @transaction_identifier,
+        payment_gateway_identifier: @payment_gateway::IDENTIFIER,
+        order_number:               order_number
       }))
     rescue VisaPaymentGateway::CaptureFailed,
            MastercardPaymentGateway::CaptureFailed
       apply(Payments::CaptureFailed.strict(data: {
-        transaction_identifier: @transaction_identifier,
-        order_number:           @order_number
+        transaction_identifier:     @transaction_identifier,
+        payment_gateway_identifier: @payment_gateway::IDENTIFIER,
+        order_number:               order_number
       }))
     end
 
@@ -58,14 +63,16 @@ module Payments
       @payment_gateway.void(@payment_gateway_transaction_identifier)
 
       apply(Payments::VoidSucceeded.strict(data: {
-        transaction_identifier: @transaction_identifier,
-        order_number:           @order_number
+        transaction_identifier:     @transaction_identifier,
+        payment_gateway_identifier: @payment_gateway::IDENTIFIER,
+        order_number:               order_number
       }))
     rescue VisaPaymentGateway::VoidFailed,
            MastercardPaymentGateway::VoidFailed
       apply(Payments::VoidFailed.strict(data: {
-        transaction_identifier: @transaction_identifier,
-        order_number:           @order_number
+        transaction_identifier:     @transaction_identifier,
+        payment_gateway_identifier: @payment_gateway::IDENTIFIER,
+        order_number:               order_number
       }))
     end
 
@@ -86,6 +93,7 @@ module Payments
     def apply_authorization_succeeded(event)
       @transaction_identifier                 = event.data[:transaction_identifier]
       @payment_gateway_transaction_identifier = event.data[:payment_gateway_transaction_identifier]
+      @payment_gateway_identifier             = event.data[:payment_gateway_identifier]
       @order_number                           = event.data[:order_number]
       @state                                  = :authorized
     end
