@@ -24,6 +24,7 @@ require_dependency 'payments/domain_events/void_succeeded.rb'
 require_dependency 'payments/domain_events/void_failed.rb'
 require_dependency 'payments/domain_events/refund_succeeded.rb'
 require_dependency 'payments/domain_events/refund_failed.rb'
+require_dependency 'payments/domain_events/payment_gateway_registered.rb'
 
 require_dependency 'payments/domain_services/visa_payment_gateway.rb'
 require_dependency 'payments/domain_services/mastercard_payment_gateway.rb'
