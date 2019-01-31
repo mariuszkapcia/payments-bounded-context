@@ -4,12 +4,12 @@ module Payments
 
     attr_accessor :payment_gateway_identifier
     attr_accessor :adapter
-    attr_accessor :fallback_adapter
+    attr_accessor :fallback_identifier
 
-    def initialize(payment_gateway_identifier:, adapter:, fallback_adapter:)
+    def initialize(payment_gateway_identifier:, adapter:, fallback_identifier:)
       @payment_gateway_identifier = payment_gateway_identifier
       @adapter                    = adapter
-      @fallback_adapter           = fallback_adapter
+      @fallback_identifier        = fallback_identifier
     end
   end
 end
