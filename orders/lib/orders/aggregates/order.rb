@@ -10,12 +10,17 @@ module Orders
       @number = nil
     end
 
+    # NOTE: gross_value and currency should be calculated from order lines before submitting but we don't have
+    #       order lines implementation here so it is hardcoded. Implementation of order lines is not a purpose of
+    #       this sample code.
     def submit(order_number)
       raise NotAllowed unless draft?
 
       apply(Orders::OrderSubmitted.strict(data: {
         order_uuid:   @uuid,
-        order_number: order_number
+        order_number: order_number,
+        gross_value:  0,
+        currency:     'USD'
       }))
     end
 

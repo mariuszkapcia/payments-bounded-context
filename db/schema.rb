@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_01_30_221435) do
+ActiveRecord::Schema.define(version: 2019_01_31_113236) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -44,13 +44,14 @@ ActiveRecord::Schema.define(version: 2019_01_30_221435) do
   end
 
   create_table "ui_ledger_read_model", force: :cascade do |t|
-    t.string "identifier", null: false
+    t.string "identifier"
     t.string "payment_gateway_transaction_identifier"
     t.integer "amount"
     t.string "currency"
     t.datetime "timestamp"
     t.string "state"
     t.string "payment_gateway_identifier"
+    t.string "order_number"
   end
 
   create_table "visa_payment_gateway_transactions", force: :cascade do |t|

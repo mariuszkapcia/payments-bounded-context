@@ -4,9 +4,7 @@ module Payments
       transaction_identifier:                 String,
       payment_gateway_transaction_identifier: String,
       payment_gateway_identifier:             String,
-      order_number:                           String,
-      amount:                                 Integer,
-      currency:                               String
+      order_number:                           String
     }.freeze
 
     def self.strict(data:)

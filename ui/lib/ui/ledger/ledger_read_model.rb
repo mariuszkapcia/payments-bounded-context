@@ -2,21 +2,17 @@ module UI
   class LedgerReadModel
     def call(event)
       case event
+      when Orders::OrderSubmitted
+        add_order(event.data[:order_number], event.data[:amount], event.data[:currency])
       when Payments::AuthorizationSucceeded
-        add_transaction(
-          event.data[:transaction_identifier],
-          event.data[:payment_gateway_transaction_identifier],
-          event.data[:amount],
-          event.data[:currency],
-          event.metadata[:timestamp]
-        )
-        add_payment_gateway_informatin(
+        add_transaction_information(
+          event.data[:order_number],
           event.data[:transaction_identifier],
           event.data[:payment_gateway_identifier],
           event.data[:payment_gateway_transaction_identifier]
         )
       when Payments::CaptureSucceeded
-        capture_transaction(event.data[:transaction_identifier])
+        capture_transaction(event.data[:transaction_identifier], event.metadata[:timestamp])
       end
     end
 
@@ -26,26 +22,27 @@ module UI
 
     private
 
-    def add_transaction(transaction_identifier, amount, currency, timestamp)
-      UI::Ledger::Transaction.create!(
-        identifier: transaction_identifier,
-        amount:     amount,
-        currency:   currency,
-        timestamp:  timestamp,
-        state:      'authorized'
-      )
+    def add_order(order_number, amount, currency)
+      UI::Ledger::Transaction.create!(order_number: order_number, amount: amount, currency: currency)
     end
 
-    def add_payment_gateway_informatin(transaction_identifier, gateway_identifier, gateway_transaction_identifier)
-      transaction = UI::Ledger::Transaction.find_by(identifier: transaction_identifier)
-      transaction.payment_gateway_identifier = gateway_identifier
-      transaction.payment_gateway_transaction_identifier = gateway_transaction_identifier
+    def add_transaction_information(order_number, trx_identifier, gateway_identifier, gateway_trx_identifier)
+      transaction = UI::Ledger::Transaction.find_by(order_number: transaction_identifier)
+
+      transaction.identifier                             = trx_identifier
+      transaction.payment_gateway_identifier             = gateway_identifier
+      transaction.payment_gateway_transaction_identifier = gateway_trx_identifier
+      transaction.state                                  = 'authorized'
+
       transaction.save!
     end
 
-    def capture_transaction(transaction_identifier)
+    def capture_transaction(transaction_identifier, timestamp)
       transaction       = UI::Ledger::Transaction.find_by(identifier: transaction_identifier, state: 'authorized')
-      transaction.state = 'captured'
+
+      transaction.state       = 'captured'
+      transaction.transaction = timestamp
+
       transaction.save!
     end
   end
