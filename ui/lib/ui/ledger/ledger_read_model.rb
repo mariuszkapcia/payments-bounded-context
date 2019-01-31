@@ -3,7 +3,7 @@ module UI
     def call(event)
       case event
       when Orders::OrderSubmitted
-        add_order(event.data[:order_number], event.data[:amount], event.data[:currency])
+        add_order(event.data[:order_number], event.data[:gross_value], event.data[:currency])
       when Payments::AuthorizationSucceeded
         add_transaction_information(
           event.data[:order_number],
@@ -27,7 +27,7 @@ module UI
     end
 
     def add_transaction_information(order_number, trx_identifier, gateway_identifier, gateway_trx_identifier)
-      transaction = UI::Ledger::Transaction.find_by(order_number: transaction_identifier)
+      transaction = UI::Ledger::Transaction.find_by(order_number: order_number)
 
       transaction.identifier                             = trx_identifier
       transaction.payment_gateway_identifier             = gateway_identifier
@@ -40,8 +40,8 @@ module UI
     def capture_transaction(transaction_identifier, timestamp)
       transaction       = UI::Ledger::Transaction.find_by(identifier: transaction_identifier, state: 'authorized')
 
-      transaction.state       = 'captured'
-      transaction.transaction = timestamp
+      transaction.state     = 'captured'
+      transaction.timestamp = timestamp
 
       transaction.save!
     end
