@@ -14,6 +14,7 @@ require_dependency 'payments/commands/void_authorization.rb'
 require_dependency 'payments/commands/refund_payment.rb'
 require_dependency 'payments/commands/register_payment_gateway.rb'
 require_dependency 'payments/commands/choose_primary_payment_gateway.rb'
+require_dependency 'payments/commands/switch_to_fallback_payment_gateway.rb'
 
 require_dependency 'payments/domain_events/authorization_succeeded.rb'
 require_dependency 'payments/domain_events/authorization_failed.rb'
