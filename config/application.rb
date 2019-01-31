@@ -11,7 +11,7 @@ module PaymentsBoundedContext
     config.load_defaults 5.2
 
     config.paths.add 'lib/',         eager_load: true
-    config.paths.add 'command/',     eager_load: true
+    config.paths.add 'command/lib',  eager_load: true
     config.paths.add 'payments/lib', eager_load: true
     config.paths.add 'orders/lib',   eager_load: true
     config.paths.add 'ui/lib',       eager_load: true
