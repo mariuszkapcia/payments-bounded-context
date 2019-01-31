@@ -351,10 +351,6 @@ module Payments
       'order_number'
     end
 
-    # def fake_payment_gateway(broken: false)
-    #   FakePaymentGateway.new(broken: broken)
-    # end
-
     def fake_payment_gateway_list(broken: false)
       FakePaymentGatewayList.new(broken: broken)
     end
