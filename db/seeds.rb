@@ -1,7 +1,16 @@
-# This file should contain all the record creation needed to seed the database with its default values.
-# The data can then be loaded with the rails db:seed command (or created alongside the database with db:setup).
-#
-# Examples:
-#
-#   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
-#   Character.create(name: 'Luke', movie: movies.first)
+command_bus = Rails.configuration.command_bus
+command_bus.call(
+  Payments::RegisterPaymentGateway.new(
+    payment_gateway_identifier: 'visa',
+    adapter:                    'VisaPaymentGateway',
+    fallback_identifier:        'MastercardPaymentGateway'
+  )
+)
+command_bus.call(
+  Payments::RegisterPaymentGateway.new(
+    payment_gateway_identifier: 'mastercard',
+    adapter:                    'MastercardPaymentGateway',
+    fallback_identifier:        nil
+  )
+)
+command_bus.call(Payments::ChoosePrimaryPaymentGateway.new(payment_gateway_identifier: 'visa'))
