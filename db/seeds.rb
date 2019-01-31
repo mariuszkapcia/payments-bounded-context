@@ -2,14 +2,14 @@ command_bus = Rails.configuration.command_bus
 command_bus.call(
   Payments::RegisterPaymentGateway.new(
     payment_gateway_identifier: 'visa',
-    adapter:                    'VisaPaymentGateway',
+    adapter:                    'Payments::VisaPaymentGateway',
     fallback_identifier:        'MastercardPaymentGateway'
   )
 )
 command_bus.call(
   Payments::RegisterPaymentGateway.new(
     payment_gateway_identifier: 'mastercard',
-    adapter:                    'MastercardPaymentGateway',
+    adapter:                    'Payments::MastercardPaymentGateway',
     fallback_identifier:        nil
   )
 )
