@@ -61,7 +61,7 @@ module Payments
         payment_gateway_identifier: @payment_gateway.identifier,
         order_number:               @order_number
       }))
-    rescue PaymentGatewayVoidFailed::VoidFailed
+    rescue PaymentGatewayVoidFailed
       apply(Payments::VoidFailed.strict(data: {
         transaction_identifier:     @transaction_identifier,
         payment_gateway_identifier: @payment_gateway.identifier,
