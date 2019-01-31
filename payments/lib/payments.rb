@@ -9,6 +9,7 @@ require_dependency 'payments/command_handlers/on_capture_authorization.rb'
 require_dependency 'payments/command_handlers/on_void_authorization.rb'
 require_dependency 'payments/command_handlers/on_refund_payment.rb'
 require_dependency 'payments/command_handlers/on_register_payment_gateway.rb'
+require_dependency 'payments/command_handlers/on_choose_primary_payment_gateway.rb'
 
 require_dependency 'payments/commands/authorize_credit_card.rb'
 require_dependency 'payments/commands/capture_authorization.rb'
