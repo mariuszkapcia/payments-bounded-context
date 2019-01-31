@@ -9,3 +9,5 @@ Content:
 - Order fulfillment process manager.
 - Order shipment process manager.
 - UI bounded context with Ledger read model.
+
+Sticky notes representation: https://realtimeboard.com/welcomeonboard/UJmEbjYX4gtFkeUfz66zcIFbNxdxLhQPoRUv2hpuU24AX4fFd0E2ED3p3o59qJg8
