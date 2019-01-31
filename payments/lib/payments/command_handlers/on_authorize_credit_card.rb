@@ -11,8 +11,10 @@ module Payments
       command.verify!
 
       ActiveRecord::Base.transaction do
-        payment_gateway     = @payment_gateway_list.fetch_primary
-        credit_card_payment = CreditCardPayment.new(command.transaction_identifier, payment_gateway: payment_gateway)
+        credit_card_payment = CreditCardPayment.new(
+          command.transaction_identifier,
+          payment_gateway_list: @payment_gateway_list
+        )
         credit_card_payment.load(stream_name(command.transaction_identifier), event_store: @event_store)
         credit_card_payment.authorize(command.credit_card_token, command.amount, command.currency, command.order_number)
         credit_card_payment.store(event_store: @event_store)
