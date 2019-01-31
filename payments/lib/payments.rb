@@ -12,6 +12,7 @@ require_dependency 'payments/commands/authorize_credit_card.rb'
 require_dependency 'payments/commands/capture_authorization.rb'
 require_dependency 'payments/commands/void_authorization.rb'
 require_dependency 'payments/commands/refund_payment.rb'
+require_dependency 'payments/commands/register_payment_gateway.rb'
 
 require_dependency 'payments/domain_events/authorization_succeeded.rb'
 require_dependency 'payments/domain_events/authorization_failed.rb'
