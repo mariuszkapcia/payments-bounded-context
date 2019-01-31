@@ -3,24 +3,24 @@ require_dependency 'payments'
 module Payments
   RSpec.describe 'CreditCardPayment aggregate' do
     specify 'authorize payment' do
-      payment_gateway     = fake_payment_gateway(broken: false)
-      credit_card_payment = CreditCardPayment.new(transaction_identifier, payment_gateway: payment_gateway)
+      payment_gateway_list = fake_payment_gateway_list(broken: false)
+      credit_card_payment  = CreditCardPayment.new(transaction_identifier, payment_gateway_list: payment_gateway_list)
       credit_card_payment.authorize(credit_card_token, amount, currency, order_number)
 
       expect(credit_card_payment).to(have_applied(authorization_succeeded))
     end
 
     specify 'payment authorization failed' do
-      payment_gateway     = fake_payment_gateway(broken: true)
-      credit_card_payment = CreditCardPayment.new(transaction_identifier, payment_gateway: payment_gateway)
+      payment_gateway_list = fake_payment_gateway_list(broken: true)
+      credit_card_payment  = CreditCardPayment.new(transaction_identifier, payment_gateway_list: payment_gateway_list)
       credit_card_payment.authorize(credit_card_token, amount, currency, order_number)
 
       expect(credit_card_payment).to(have_applied(authorization_failed))
     end
 
     specify 'cannot authorize already authorized payment' do
-      payment_gateway     = fake_payment_gateway(broken: false)
-      credit_card_payment = CreditCardPayment.new(transaction_identifier, payment_gateway: payment_gateway)
+      payment_gateway_list = fake_payment_gateway_list(broken: false)
+      credit_card_payment  = CreditCardPayment.new(transaction_identifier, payment_gateway_list: payment_gateway_list)
       credit_card_payment.authorize(credit_card_token, amount, currency, order_number)
 
       expect do
@@ -29,8 +29,8 @@ module Payments
     end
 
     specify 'caputre authorization' do
-      payment_gateway     = fake_payment_gateway(broken: false)
-      credit_card_payment = CreditCardPayment.new(transaction_identifier, payment_gateway: payment_gateway)
+      payment_gateway_list = fake_payment_gateway_list(broken: false)
+      credit_card_payment  = CreditCardPayment.new(transaction_identifier, payment_gateway_list: payment_gateway_list)
       credit_card_payment.authorize(credit_card_token, amount, currency, order_number)
       credit_card_payment.capture
 
@@ -38,18 +38,18 @@ module Payments
     end
 
     specify 'authorization capture failed' do
-      payment_gateway     = fake_payment_gateway(broken: false)
-      credit_card_payment = CreditCardPayment.new(transaction_identifier, payment_gateway: payment_gateway)
+      payment_gateway_list = fake_payment_gateway_list(broken: false)
+      credit_card_payment  = CreditCardPayment.new(transaction_identifier, payment_gateway_list: payment_gateway_list)
       credit_card_payment.authorize(credit_card_token, amount, currency, order_number)
-      payment_gateway.break
+      payment_gateway_list.break
       credit_card_payment.capture
 
       expect(credit_card_payment).to(have_applied(capture_failed))
     end
 
     specify 'cannot capture not authorized payment' do
-      payment_gateway     = fake_payment_gateway(broken: false)
-      credit_card_payment = CreditCardPayment.new(transaction_identifier, payment_gateway: payment_gateway)
+      payment_gateway_list = fake_payment_gateway_list(broken: false)
+      credit_card_payment  = CreditCardPayment.new(transaction_identifier, payment_gateway_list: payment_gateway_list)
 
       expect do
         credit_card_payment.capture
@@ -57,8 +57,8 @@ module Payments
     end
 
     specify 'cannot capture already captured authorization payment' do
-      payment_gateway     = fake_payment_gateway(broken: false)
-      credit_card_payment = CreditCardPayment.new(transaction_identifier, payment_gateway: payment_gateway)
+      payment_gateway_list = fake_payment_gateway_list(broken: false)
+      credit_card_payment  = CreditCardPayment.new(transaction_identifier, payment_gateway_list: payment_gateway_list)
       credit_card_payment.authorize(credit_card_token, amount, currency, order_number)
       credit_card_payment.capture
 
@@ -68,8 +68,8 @@ module Payments
     end
 
     specify 'void authorization' do
-      payment_gateway     = fake_payment_gateway(broken: false)
-      credit_card_payment = CreditCardPayment.new(transaction_identifier, payment_gateway: payment_gateway)
+      payment_gateway_list = fake_payment_gateway_list(broken: false)
+      credit_card_payment  = CreditCardPayment.new(transaction_identifier, payment_gateway_list: payment_gateway_list)
       credit_card_payment.authorize(credit_card_token, amount, currency, order_number)
       credit_card_payment.void
 
@@ -77,18 +77,18 @@ module Payments
     end
 
     specify 'authorization void failed' do
-      payment_gateway     = fake_payment_gateway(broken: false)
-      credit_card_payment = CreditCardPayment.new(transaction_identifier, payment_gateway: payment_gateway)
+      payment_gateway_list = fake_payment_gateway_list(broken: false)
+      credit_card_payment  = CreditCardPayment.new(transaction_identifier, payment_gateway_list: payment_gateway_list)
       credit_card_payment.authorize(credit_card_token, amount, currency, order_number)
-      payment_gateway.break
+      payment_gateway_list.break
       credit_card_payment.void
 
       expect(credit_card_payment).to(have_applied(void_failed))
     end
 
     specify 'cannot void not authorized payment' do
-      payment_gateway     = fake_payment_gateway(broken: false)
-      credit_card_payment = CreditCardPayment.new(transaction_identifier, payment_gateway: payment_gateway)
+      payment_gateway_list = fake_payment_gateway_list(broken: false)
+      credit_card_payment  = CreditCardPayment.new(transaction_identifier, payment_gateway_list: payment_gateway_list)
 
       expect do
         credit_card_payment.void
@@ -96,8 +96,8 @@ module Payments
     end
 
     specify 'cannot void already voided authorization payment' do
-      payment_gateway     = fake_payment_gateway(broken: false)
-      credit_card_payment = CreditCardPayment.new(transaction_identifier, payment_gateway: payment_gateway)
+      payment_gateway_list = fake_payment_gateway_list(broken: false)
+      credit_card_payment  = CreditCardPayment.new(transaction_identifier, payment_gateway_list: payment_gateway_list)
       credit_card_payment.authorize(credit_card_token, amount, currency, order_number)
       credit_card_payment.void
 
@@ -148,6 +148,28 @@ module Payments
     end
 
     private
+
+    class FakePaymentGatewayList
+      def fetch_primary
+        @payment_gateway_list.first
+      end
+
+      def find(identifier)
+        @payment_gateway_list.first
+      end
+
+      def break
+        @payment_gateway_list.each do |payment_gateway|
+          payment_gateway.break
+        end
+      end
+
+      private
+
+      def initialize(broken:)
+        @payment_gateway_list = [FakePaymentGateway.new(broken: broken)]
+      end
+    end
 
     class FakePaymentGateway
       def authorize(credit_card_token, amount, currency)
@@ -225,7 +247,7 @@ module Payments
       {
         transaction_identifier:                 transaction_identifier,
         payment_gateway_transaction_identifier: kind_of(String),
-        payment_gateway_identifier:             fake_payment_gateway.identifier,
+        payment_gateway_identifier:             'fake',
         order_number:                           order_number,
         amount:                                 amount,
         currency:                               currency
@@ -235,7 +257,7 @@ module Payments
     def authorization_failed_data
       {
         transaction_identifier:     transaction_identifier,
-        payment_gateway_identifier: fake_payment_gateway.identifier,
+        payment_gateway_identifier: 'fake',
         order_number:               order_number
       }
     end
@@ -243,7 +265,7 @@ module Payments
     def capture_succeeded_data
       {
         transaction_identifier:                 transaction_identifier,
-        payment_gateway_identifier:             fake_payment_gateway.identifier,
+        payment_gateway_identifier:             'fake',
         payment_gateway_transaction_identifier: kind_of(String),
         order_number:                           order_number,
         amount:                                 amount,
@@ -254,7 +276,7 @@ module Payments
     def capture_failed_data
       {
         transaction_identifier:     transaction_identifier,
-        payment_gateway_identifier: fake_payment_gateway.identifier,
+        payment_gateway_identifier: 'fake',
         order_number:               order_number
       }
     end
@@ -262,7 +284,7 @@ module Payments
     def void_succeeded_data
       {
         transaction_identifier:     transaction_identifier,
-        payment_gateway_identifier: fake_payment_gateway.identifier,
+        payment_gateway_identifier: 'fake',
         order_number:               order_number
       }
     end
@@ -270,7 +292,7 @@ module Payments
     def void_failed_data
       {
         transaction_identifier:     transaction_identifier,
-        payment_gateway_identifier: fake_payment_gateway.identifier,
+        payment_gateway_identifier: 'fake',
         order_number:               order_number
       }
     end
@@ -329,8 +351,12 @@ module Payments
       'order_number'
     end
 
-    def fake_payment_gateway(broken: false)
-      FakePaymentGateway.new(broken: broken)
+    # def fake_payment_gateway(broken: false)
+    #   FakePaymentGateway.new(broken: broken)
+    # end
+
+    def fake_payment_gateway_list(broken: false)
+      FakePaymentGatewayList.new(broken: broken)
     end
   end
 end
