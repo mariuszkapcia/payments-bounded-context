@@ -2,10 +2,8 @@ require_dependency 'payments'
 
 module Payments
   class FakePaymentGateway
-    IDENTIFIER = 'fake'.freeze
-
     def authorize(credit_card_token, amount, currency)
-      SecureRandom.hex(10)
+      'payment_gateway_transaction_identifier'
     end
 
     def capture(transaction_identifier)
@@ -15,11 +13,15 @@ module Payments
     def void(transaction_identifier)
       true
     end
+
+    def identifier
+      'fake'
+    end
   end
 
   RSpec.describe 'CreditCardPayment aggregate' do
     specify 'authorize payment' do
-      credit_card_payment = CreditCardPayment.new(transaction_identifier, payment_gateway: FakePaymentGateway.new)
+      credit_card_payment = CreditCardPayment.new(transaction_identifier, payment_gateway: fake_payment_gateway)
       credit_card_payment.authorize(credit_card_token, amount, currency, order_number)
 
       expect(credit_card_payment).to(have_applied(authorization_succeeded))
@@ -35,7 +37,7 @@ module Payments
       {
         transaction_identifier:                 transaction_identifier,
         payment_gateway_transaction_identifier: kind_of(String),
-        payment_gateway_identifier:             FakePaymentGateway::IDENTIFIER,
+        payment_gateway_identifier:             fake_payment_gateway.identifier,
         order_number:                           order_number
       }
     end
@@ -58,6 +60,10 @@ module Payments
 
     def order_number
       'order_number'
+    end
+
+    def fake_payment_gateway
+      @fake_payment_gateway ||= FakePaymentGateway.new
     end
   end
 end

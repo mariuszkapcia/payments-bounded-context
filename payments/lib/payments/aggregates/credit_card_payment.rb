@@ -7,7 +7,6 @@ module Payments
     def initialize(transaction_identifier, payment_gateway:)
       @transaction_identifier                 = transaction_identifier
       @payment_gateway_transaction_identifier = nil
-      @payment_gateway_identifier             = nil
       @payment_gateway                        = payment_gateway
       @order_number                           = nil
       @state                                  = :none
@@ -90,7 +89,6 @@ module Payments
     def apply_authorization_succeeded(event)
       @transaction_identifier                 = event.data[:transaction_identifier]
       @payment_gateway_transaction_identifier = event.data[:payment_gateway_transaction_identifier]
-      @payment_gateway_identifier             = event.data[:payment_gateway_identifier]
       @order_number                           = event.data[:order_number]
       @state                                  = :authorized
     end
