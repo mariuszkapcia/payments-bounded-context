@@ -16,11 +16,13 @@ module Payments
     end
 
     def fetch_primary
-      Payments::PaymentGatewayList::PaymentGateway.where(primary: true).take
+      payment_gateway = Payments::PaymentGatewayList::PaymentGateway.where(primary: true).take
+      payment_gateway.adater.constantize.new
     end
 
     def find(identifier)
-      Payments::PaymentGatewayList::PaymentGateway.find_by(identifier: identifier)
+      payment_gateway = Payments::PaymentGatewayList::PaymentGateway.find_by(identifier: identifier)
+      payment_gateway.adater.constantize.new
     end
 
     private
