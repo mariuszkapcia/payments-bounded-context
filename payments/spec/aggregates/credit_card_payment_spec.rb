@@ -1,42 +1,6 @@
 require_dependency 'payments'
 
 module Payments
-  class FakePaymentGateway
-    def authorize(credit_card_token, amount, currency)
-      raise PaymentGatewayAuthorizationFailed if @broken
-      'payment_gateway_transaction_identifier'
-    end
-
-    def capture(transaction_identifier)
-      raise PaymentGatewayCaptureFailed if @broken
-      true
-    end
-
-    def void(transaction_identifier)
-      raise PaymentGatewayVoidFailed if @broken
-      true
-    end
-
-    def refund(transaction_identifier, amount)
-      raise PaymentGatewayRefundFailed if @broken
-      true
-    end
-
-    def identifier
-      'fake'
-    end
-
-    def break
-      @broken = true
-    end
-
-    private
-
-    def initialize(broken:)
-      @broken = broken
-    end
-  end
-
   RSpec.describe 'CreditCardPayment aggregate' do
     specify 'authorize payment' do
       payment_gateway     = fake_payment_gateway(broken: false)
@@ -184,6 +148,42 @@ module Payments
     end
 
     private
+
+    class FakePaymentGateway
+      def authorize(credit_card_token, amount, currency)
+        raise PaymentGatewayAuthorizationFailed if @broken
+        'payment_gateway_transaction_identifier'
+      end
+
+      def capture(transaction_identifier)
+        raise PaymentGatewayCaptureFailed if @broken
+        true
+      end
+
+      def void(transaction_identifier)
+        raise PaymentGatewayVoidFailed if @broken
+        true
+      end
+
+      def refund(transaction_identifier, amount)
+        raise PaymentGatewayRefundFailed if @broken
+        true
+      end
+
+      def identifier
+        'fake'
+      end
+
+      def break
+        @broken = true
+      end
+
+      private
+
+      def initialize(broken:)
+        @broken = broken
+      end
+    end
 
     def authorization_succeeded
       an_event(Payments::AuthorizationSucceeded).with_data(authorization_succeeded_data).strict
