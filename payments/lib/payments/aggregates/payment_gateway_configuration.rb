@@ -8,13 +8,13 @@ module Payments
       @payment_gateways = []
     end
 
-    def register(payment_gateway_identifier, adapter, fallback_adapter)
+    def register(payment_gateway_identifier, adapter, fallback_identifier)
       raise InvalidOperation if gateway_already_registered?(payment_gateway_identifier)
 
       apply(Payments::PaymentGatewayRegistered.strict(data: {
         payment_gateway_identifier: payment_gateway_identifier,
         adater:                     adapter,
-        fallback_adapter:           fallback_adapter
+        fallback_identifier:        fallback_identifier
       }))
     end
 
