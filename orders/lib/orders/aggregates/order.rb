@@ -4,7 +4,7 @@ module Orders
 
     NotAllowed = Class.new(StandardError)
 
-    def initailize(uuid)
+    def initialize(uuid)
       @state  = :draft
       @uuid   = uuid
       @number = nil
@@ -25,7 +25,7 @@ module Orders
     end
 
     def cancel
-      raise NotAllowed unless draft? || submitted?
+      raise NotAllowed if draft? || cancelled?
 
       apply(Orders::OrderCancelled.strict(data: {
         order_uuid:   @uuid,
