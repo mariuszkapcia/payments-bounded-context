@@ -62,6 +62,10 @@ Rails.configuration.to_prepare do
   command_bus.register(Payments::VoidAuthorization, Payments::OnVoidAuthorization.new(event_store))
   command_bus.register(Payments::RefundPayment, Payments::OnRefundPayment.new(event_store))
 
+  command_bus.register(Payments::RegisterPaymentGateway, Payments::OnRegisterPaymentGateway.new(event_store))
+  command_bus.register(Payments::ChoosePrimaryPaymentGateway, Payments::OnChoosePrimaryPaymentGateway.new(event_store))
+  command_bus.register(Payments::SwitchToFallbackPaymentGateway, Payments::OnSwitchToFallbackPaymentGateway.new(event_store))
+
   # Orders commands.
   command_bus.register(Orders::SubmitOrder, Orders::OnSubmitOrder.new(event_store))
   command_bus.register(Orders::ShipOrder, Orders::OnShipOrder.new(event_store))
