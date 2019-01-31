@@ -56,6 +56,22 @@ Rails.configuration.to_prepare do
     ]
   )
 
+  event_store.subscribe(
+    Payments::PaymentGatewaySwitcher.new(
+      event_store:            event_store,
+      command_bus:            command_bus,
+      fallback_configuration: Rails.configuration.payment_gateway_fallback_configuration
+    ),
+    to: [
+      Payments::AuthorizationSucceeded,
+      Payments::CaptureSucceeded,
+      Payments::VoidSucceeded,
+      Payments::AuthorizationFailed,
+      Payments::CaptureFailed,
+      Payments::VoidFailed
+    ]
+  )
+
   # Payments commands.
   command_bus.register(Payments::AuthorizeCreditCard, Payments::OnAuthorizeCreditCard.new(event_store))
   command_bus.register(Payments::CaptureAuthorization, Payments::OnCaptureAuthorization.new(event_store))

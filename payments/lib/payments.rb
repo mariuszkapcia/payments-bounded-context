@@ -35,5 +35,7 @@ require_dependency 'payments/domain_events/payment_gateway_switched_to_fallback.
 require_dependency 'payments/domain_services/visa_payment_gateway.rb'
 require_dependency 'payments/domain_services/mastercard_payment_gateway.rb'
 
+require_dependency 'payments/process_managers/payment_gateway_switcher.rb'
+
 require_dependency 'payments/read_models/payment_gateway_list/payment_gateway_list_read_model.rb'
 require_dependency 'payments/read_models/payment_gateway_list/payment_gateway.rb'
