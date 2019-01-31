@@ -10,6 +10,43 @@ Rails.configuration.to_prepare do
     config.default_event_store = event_store
   end
 
+  # UI bounded context.
+  event_store.subscribe(
+    UI::LedgerReadModel,
+    to: [
+      Orders::OrderSubmitted,
+      Payments::AuthorizationSucceeded,
+      Payments::CaptureSucceeded
+    ]
+  )
+
+  # Process managers.
+  event_store.subscribe(
+    Orders::OrderShipment.new(event_store: event_store, command_bus: command_bus),
+    to: [
+      Orders::OrderSubmitted,
+      Payments::AuthorizationSucceeded,
+      Payments::AuthorizationFailed,
+      Orders::OrderCancelled,
+      Orders::OrderShipped
+    ]
+  )
+
+  event_store.subscribe(
+    Orders::OrderFulfillment.new(event_store: event_store, command_bus: command_bus),
+    to: [
+      Orders::OrderSubmitted,
+      Payments::AuthorizationSucceeded,
+      Payments::AuthorizationFailed,
+      Orders::OrderCancelled,
+      Orders::OrderShipped,
+      Payments::CaptureSucceeded,
+      Payments::CaptureFailed,
+      Payments::VoidSucceeded,
+      Payments::VoidFailed
+    ]
+  )
+
   # Payments commands.
   command_bus.register(Payments::AuthorizeCreditCard, Payments::OnAuthorizeCreditCard.new(event_store))
   command_bus.register(Payments::CaptureAuthorization, Payments::OnCaptureAuthorization.new(event_store))
