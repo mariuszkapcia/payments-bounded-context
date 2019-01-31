@@ -3,7 +3,7 @@ require_dependency 'payments'
 module Payments
   RSpec.describe 'OnAuthorizeCreditCard command handler' do
     specify 'authorize payment' do
-      command_bus = command_bus_factory
+      command_bus = command_bus_factory(payment_gateway_list: FakePaymentGatewayList.new)
       command_bus.call(AuthorizeCreditCard.new(
         transaction_identifier: transaction_identifier,
         credit_card_token:      credit_card_token,
@@ -16,6 +16,22 @@ module Payments
     end
 
     private
+
+    class FakePaymentGateway
+      def authorize(credit_card_token, amount, currency)
+        'payment_gateway_transaction_identifier'
+      end
+
+      def identifier
+        'fake'
+      end
+    end
+
+    class FakePaymentGatewayList
+      def fetch_primary
+        FakePaymentGateway.new
+      end
+    end
 
     def authorization_succeeded
       an_event(Payments::AuthorizationSucceeded).with_data(authorization_succeeded_data).strict
@@ -58,9 +74,12 @@ module Payments
       end
     end
 
-    def command_bus_factory
+    def command_bus_factory(payment_gateway_list:)
       Arkency::CommandBus.new.tap do |bus|
-        bus.register(AuthorizeCreditCard, OnAuthorizeCreditCard.new(event_store))
+        bus.register(AuthorizeCreditCard, OnAuthorizeCreditCard.new(
+          event_store,
+          payment_gateway_list: payment_gateway_list
+        ))
       end
     end
   end
