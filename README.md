@@ -7,4 +7,5 @@ Content:
 - Payments bounded context.
 - Orders bounded context.
 - Order fulfillment process manager.
+- Order shipment process manager.
 - UI bounded context with Ledger read model.

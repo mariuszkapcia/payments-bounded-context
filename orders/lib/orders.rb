@@ -18,3 +18,4 @@ require_dependency 'orders/domain_events/order_shipped.rb'
 require_dependency 'orders/domain_services/order_number_generator.rb'
 
 require_dependency 'orders/process_managers/order_fulfillment.rb'
+require_dependency 'orders/process_managers/order_shipment.rb'
