@@ -40,13 +40,13 @@ module Payments
       apply(Payments::CaptureSucceeded.strict(data: {
         transaction_identifier:     @transaction_identifier,
         payment_gateway_identifier: @payment_gateway.identifier,
-        order_number:               order_number
+        order_number:               @order_number
       }))
     rescue PaymentGatewayCaptureFailed
       apply(Payments::CaptureFailed.strict(data: {
         transaction_identifier:     @transaction_identifier,
         payment_gateway_identifier: @payment_gateway.identifier,
-        order_number:               order_number
+        order_number:               @order_number
       }))
     end
 
@@ -59,13 +59,13 @@ module Payments
       apply(Payments::VoidSucceeded.strict(data: {
         transaction_identifier:     @transaction_identifier,
         payment_gateway_identifier: @payment_gateway.identifier,
-        order_number:               order_number
+        order_number:               @order_number
       }))
     rescue PaymentGatewayVoidFailed::VoidFailed
       apply(Payments::VoidFailed.strict(data: {
         transaction_identifier:     @transaction_identifier,
         payment_gateway_identifier: @payment_gateway.identifier,
-        order_number:               order_number
+        order_number:               @order_number
       }))
     end
 
