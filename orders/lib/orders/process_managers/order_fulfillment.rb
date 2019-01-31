@@ -12,12 +12,10 @@ module Orders
         @event_ids_to_link = []
       end
 
-      # NOTE: Should I try again if capture failed?
       def capture?
         @order_state == :shipped && @payment_state.in?([:authorized, :capture_failed])
       end
 
-      # NOTE: Should I try again if void failed?
       def void?
         @order_state == :cancelled && @payment_state.in?([:authorized, :void_failed])
       end
