@@ -1,9 +1,13 @@
 require_dependency 'payments'
 
+require_relative '../support/fakes'
+
 module Payments
   RSpec.describe 'OnCaptureAuthorization command handler' do
+    include Fakes
+
     specify 'capture authorization' do
-      command_bus = command_bus_factory(payment_gateway_list: FakePaymentGatewayList.new)
+      command_bus = command_bus_factory(payment_gateway_list: Fakes::PaymentGatewayList.new)
       command_bus.call(AuthorizeCreditCard.new(
         transaction_identifier: transaction_identifier,
         credit_card_token:      credit_card_token,

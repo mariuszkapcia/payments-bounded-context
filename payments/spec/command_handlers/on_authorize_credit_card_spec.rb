@@ -1,9 +1,13 @@
 require_dependency 'payments'
 
+require_relative '../support/fakes'
+
 module Payments
   RSpec.describe 'OnAuthorizeCreditCard command handler' do
+    include Fakes
+
     specify 'authorize payment' do
-      command_bus = command_bus_factory(payment_gateway_list: FakePaymentGatewayList.new)
+      command_bus = command_bus_factory(payment_gateway_list: Fakes::PaymentGatewayList.new)
       command_bus.call(AuthorizeCreditCard.new(
         transaction_identifier: transaction_identifier,
         credit_card_token:      credit_card_token,
@@ -16,22 +20,6 @@ module Payments
     end
 
     private
-
-    class FakePaymentGateway
-      def authorize(credit_card_token, amount, currency)
-        'payment_gateway_transaction_identifier'
-      end
-
-      def identifier
-        'fake'
-      end
-    end
-
-    class FakePaymentGatewayList
-      def fetch_primary
-        FakePaymentGateway.new
-      end
-    end
 
     def authorization_succeeded
       an_event(Payments::AuthorizationSucceeded).with_data(authorization_succeeded_data).strict

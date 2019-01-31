@@ -1,7 +1,11 @@
 require_dependency 'payments'
 
+require_relative '../support/fakes'
+
 module Payments
   RSpec.describe 'CreditCardPayment aggregate' do
+    include Fakes
+
     specify 'authorize payment' do
       payment_gateway_list = fake_payment_gateway_list(broken: false)
       credit_card_payment  = CreditCardPayment.new(transaction_identifier, payment_gateway_list: payment_gateway_list)
@@ -149,64 +153,6 @@ module Payments
 
     private
 
-    class FakePaymentGatewayList
-      def fetch_primary
-        @payment_gateway_list.first
-      end
-
-      def find(identifier)
-        @payment_gateway_list.first
-      end
-
-      def break
-        @payment_gateway_list.each do |payment_gateway|
-          payment_gateway.break
-        end
-      end
-
-      private
-
-      def initialize(broken:)
-        @payment_gateway_list = [FakePaymentGateway.new(broken: broken)]
-      end
-    end
-
-    class FakePaymentGateway
-      def authorize(credit_card_token, amount, currency)
-        raise PaymentGatewayAuthorizationFailed if @broken
-        'payment_gateway_transaction_identifier'
-      end
-
-      def capture(transaction_identifier)
-        raise PaymentGatewayCaptureFailed if @broken
-        true
-      end
-
-      def void(transaction_identifier)
-        raise PaymentGatewayVoidFailed if @broken
-        true
-      end
-
-      def refund(transaction_identifier, amount)
-        raise PaymentGatewayRefundFailed if @broken
-        true
-      end
-
-      def identifier
-        'fake'
-      end
-
-      def break
-        @broken = true
-      end
-
-      private
-
-      def initialize(broken:)
-        @broken = broken
-      end
-    end
-
     def authorization_succeeded
       an_event(Payments::AuthorizationSucceeded).with_data(authorization_succeeded_data).strict
     end
@@ -352,7 +298,7 @@ module Payments
     end
 
     def fake_payment_gateway_list(broken: false)
-      FakePaymentGatewayList.new(broken: broken)
+      Fakes::PaymentGatewayList.new(broken: broken)
     end
   end
 end
