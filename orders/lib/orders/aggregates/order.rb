@@ -33,6 +33,7 @@ module Orders
       }))
     end
 
+    # NOTE: In larger system this can be extracted as Shipment bounded context.
     def ship
       raise NotAllowed unless submitted?
       raise NotAllowed if shipped?
