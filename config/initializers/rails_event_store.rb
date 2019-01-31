@@ -19,6 +19,16 @@ Rails.configuration.to_prepare do
     ]
   )
 
+  # Payments bounded context.
+  event_store.subscribe(
+    Payments::PaymentGatewayListReadModel,
+    to: [
+      Payments::PaymentGatewayRegistered,
+      Payments::PrimaryPaymentGatewayChosen,
+      Payments::PaymentGatewaySwitchedToFallback
+    ]
+  )
+
   # Process managers.
   event_store.subscribe(
     Orders::OrderShipment.new(event_store: event_store, command_bus: command_bus),

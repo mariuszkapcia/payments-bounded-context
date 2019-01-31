@@ -43,6 +43,13 @@ ActiveRecord::Schema.define(version: 2019_02_04_115936) do
     t.string "state", null: false
   end
 
+  create_table "payments_payment_gateway_list_read_model", force: :cascade do |t|
+    t.string "identifier", null: false
+    t.string "adater", null: false
+    t.string "fallback_identifier"
+    t.boolean "primary"
+  end
+
   create_table "ui_ledger_read_model", force: :cascade do |t|
     t.string "identifier"
     t.string "payment_gateway_transaction_identifier"
