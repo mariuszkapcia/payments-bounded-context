@@ -23,8 +23,7 @@ module Payments
         payment_gateway_identifier:             @payment_gateway.identifier,
         order_number:                           order_number
       }))
-    rescue VisaPaymentGateway::AuthorizationFailed,
-           MastercardPaymentGateway::AuthorizationFailed
+    rescue PaymentGatewayAuthorizationFailed
       apply(Payments::AuthorizationFailed.strict(data: {
         transaction_identifier:     @transaction_identifier,
         payment_gateway_identifier: @payment_gateway.identifier,
@@ -43,8 +42,7 @@ module Payments
         payment_gateway_identifier: @payment_gateway.identifier,
         order_number:               order_number
       }))
-    rescue VisaPaymentGateway::CaptureFailed,
-           MastercardPaymentGateway::CaptureFailed
+    rescue PaymentGatewayCaptureFailed
       apply(Payments::CaptureFailed.strict(data: {
         transaction_identifier:     @transaction_identifier,
         payment_gateway_identifier: @payment_gateway.identifier,
@@ -63,8 +61,7 @@ module Payments
         payment_gateway_identifier: @payment_gateway.identifier,
         order_number:               order_number
       }))
-    rescue VisaPaymentGateway::VoidFailed,
-           MastercardPaymentGateway::VoidFailed
+    rescue PaymentGatewayVoidFailed::VoidFailed
       apply(Payments::VoidFailed.strict(data: {
         transaction_identifier:     @transaction_identifier,
         payment_gateway_identifier: @payment_gateway.identifier,
