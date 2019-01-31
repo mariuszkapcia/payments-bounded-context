@@ -21,14 +21,14 @@ module Payments
       apply(Payments::AuthorizationSucceeded.strict(data: {
         transaction_identifier:                 @transaction_identifier,
         payment_gateway_transaction_identifier: payment_gateway_transaction_identifier,
-        payment_gateway_identifier:             @payment_gateway::IDENTIFIER,
+        payment_gateway_identifier:             @payment_gateway.identifier,
         order_number:                           order_number
       }))
     rescue VisaPaymentGateway::AuthorizationFailed,
            MastercardPaymentGateway::AuthorizationFailed
       apply(Payments::AuthorizationFailed.strict(data: {
         transaction_identifier:     @transaction_identifier,
-        payment_gateway_identifier: @payment_gateway::IDENTIFIER,
+        payment_gateway_identifier: @payment_gateway.identifier,
         order_number:               order_number
       }))
     end
@@ -41,14 +41,14 @@ module Payments
 
       apply(Payments::CaptureSucceeded.strict(data: {
         transaction_identifier:     @transaction_identifier,
-        payment_gateway_identifier: @payment_gateway::IDENTIFIER,
+        payment_gateway_identifier: @payment_gateway.identifier,
         order_number:               order_number
       }))
     rescue VisaPaymentGateway::CaptureFailed,
            MastercardPaymentGateway::CaptureFailed
       apply(Payments::CaptureFailed.strict(data: {
         transaction_identifier:     @transaction_identifier,
-        payment_gateway_identifier: @payment_gateway::IDENTIFIER,
+        payment_gateway_identifier: @payment_gateway.identifier,
         order_number:               order_number
       }))
     end
@@ -61,14 +61,14 @@ module Payments
 
       apply(Payments::VoidSucceeded.strict(data: {
         transaction_identifier:     @transaction_identifier,
-        payment_gateway_identifier: @payment_gateway::IDENTIFIER,
+        payment_gateway_identifier: @payment_gateway.identifier,
         order_number:               order_number
       }))
     rescue VisaPaymentGateway::VoidFailed,
            MastercardPaymentGateway::VoidFailed
       apply(Payments::VoidFailed.strict(data: {
         transaction_identifier:     @transaction_identifier,
-        payment_gateway_identifier: @payment_gateway::IDENTIFIER,
+        payment_gateway_identifier: @payment_gateway.identifier,
         order_number:               order_number
       }))
     end

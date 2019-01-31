@@ -1,7 +1,5 @@
 module Payments
   class VisaPaymentGateway
-    IDENTIFIER = 'visa'.freeze
-
     # NOTE: We need it because we have a fake payment gateway and we need a place to store transactions information.
     class Transaction < ActiveRecord::Base
       self.table_name = 'visa_payment_gateway_transactions'
@@ -38,6 +36,10 @@ module Payments
       transaction.state = 'voided'
       transaction.save!
       true
+    end
+
+    def identifier
+      'visa'
     end
   end
 end
