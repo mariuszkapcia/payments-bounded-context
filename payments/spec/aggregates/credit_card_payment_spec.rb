@@ -49,6 +49,16 @@ module Payments
       expect(credit_card_payment).to(have_applied(authorization_failed))
     end
 
+    specify 'cannot authorize already authorized payment' do
+      payment_gateway     = fake_payment_gateway(broken: false)
+      credit_card_payment = CreditCardPayment.new(transaction_identifier, payment_gateway: payment_gateway)
+      credit_card_payment.authorize(credit_card_token, amount, currency, order_number)
+
+      expect do
+        credit_card_payment.authorize(credit_card_token, amount, currency, order_number)
+      end.to raise_error(CreditCardPayment::InvalidOperation)
+    end
+
     specify 'caputre authorization' do
       payment_gateway     = fake_payment_gateway(broken: false)
       credit_card_payment = CreditCardPayment.new(transaction_identifier, payment_gateway: payment_gateway)
@@ -68,6 +78,26 @@ module Payments
       expect(credit_card_payment).to(have_applied(capture_failed))
     end
 
+    specify 'cannot capture not authorized payment' do
+      payment_gateway     = fake_payment_gateway(broken: false)
+      credit_card_payment = CreditCardPayment.new(transaction_identifier, payment_gateway: payment_gateway)
+
+      expect do
+        credit_card_payment.capture
+      end.to raise_error(CreditCardPayment::InvalidOperation)
+    end
+
+    specify 'cannot capture already captured authorization payment' do
+      payment_gateway     = fake_payment_gateway(broken: false)
+      credit_card_payment = CreditCardPayment.new(transaction_identifier, payment_gateway: payment_gateway)
+      credit_card_payment.authorize(credit_card_token, amount, currency, order_number)
+      credit_card_payment.capture
+
+      expect do
+        credit_card_payment.capture
+      end.to raise_error(CreditCardPayment::InvalidOperation)
+    end
+
     specify 'void authorization' do
       payment_gateway     = fake_payment_gateway(broken: false)
       credit_card_payment = CreditCardPayment.new(transaction_identifier, payment_gateway: payment_gateway)
@@ -85,6 +115,26 @@ module Payments
       credit_card_payment.void
 
       expect(credit_card_payment).to(have_applied(void_failed))
+    end
+
+    specify 'cannot void not authorized payment' do
+      payment_gateway     = fake_payment_gateway(broken: false)
+      credit_card_payment = CreditCardPayment.new(transaction_identifier, payment_gateway: payment_gateway)
+
+      expect do
+        credit_card_payment.void
+      end.to raise_error(CreditCardPayment::InvalidOperation)
+    end
+
+    specify 'cannot void already voided authorization payment' do
+      payment_gateway     = fake_payment_gateway(broken: false)
+      credit_card_payment = CreditCardPayment.new(transaction_identifier, payment_gateway: payment_gateway)
+      credit_card_payment.authorize(credit_card_token, amount, currency, order_number)
+      credit_card_payment.void
+
+      expect do
+        credit_card_payment.void
+      end.to raise_error(CreditCardPayment::InvalidOperation)
     end
 
     private
