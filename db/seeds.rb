@@ -3,7 +3,7 @@ command_bus.call(
   Payments::RegisterPaymentGateway.new(
     payment_gateway_identifier: 'visa',
     adapter:                    'Payments::VisaPaymentGateway',
-    fallback_identifier:        'MastercardPaymentGateway'
+    fallback_identifier:        'mastercard'
   )
 )
 command_bus.call(
