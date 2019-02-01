@@ -5,7 +5,7 @@ module Payments
       when Payments::PaymentGatewayRegistered
         add_payment_gateway(
           event.data[:payment_gateway_identifier],
-          event.data[:adater],
+          event.data[:adapter],
           event.data[:fallback_identifier]
         )
       when Payments::PrimaryPaymentGatewayChosen
@@ -17,20 +17,20 @@ module Payments
 
     def fetch_primary
       payment_gateway = Payments::PaymentGatewayList::PaymentGateway.where(primary: true).take
-      payment_gateway.adater.constantize.new
+      payment_gateway.adapter.constantize.new
     end
 
     def find(identifier)
       payment_gateway = Payments::PaymentGatewayList::PaymentGateway.find_by(identifier: identifier)
-      payment_gateway.adater.constantize.new
+      payment_gateway.adapter.constantize.new
     end
 
     private
 
-    def add_payment_gateway(payment_gateway_identifier, adater, fallback_identifier)
+    def add_payment_gateway(payment_gateway_identifier, adapter, fallback_identifier)
       Payments::PaymentGatewayList::PaymentGateway.create!(
         identifier:          payment_gateway_identifier,
-        adater:              adater,
+        adapter:             adapter,
         fallback_identifier: fallback_identifier,
         primary:             false
       )

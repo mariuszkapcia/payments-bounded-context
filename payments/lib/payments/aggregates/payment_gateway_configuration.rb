@@ -13,7 +13,7 @@ module Payments
 
       apply(Payments::PaymentGatewayRegistered.strict(data: {
         payment_gateway_identifier: payment_gateway_identifier,
-        adater:                     adapter,
+        adapter:                    adapter,
         fallback_identifier:        fallback_identifier
       }))
     end

@@ -2,7 +2,7 @@ module Payments
   class PaymentGatewayRegistered < RailsEventStore::Event
     SCHEMA = {
       payment_gateway_identifier: String,
-      adater:                     String,
+      adapter:                    String,
       fallback_identifier:        String
     }.freeze
 

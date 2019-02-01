@@ -45,7 +45,7 @@ ActiveRecord::Schema.define(version: 2019_02_04_115936) do
 
   create_table "payments_payment_gateway_list_read_model", force: :cascade do |t|
     t.string "identifier", null: false
-    t.string "adater", null: false
+    t.string "adapter", null: false
     t.string "fallback_identifier"
     t.boolean "primary"
   end
