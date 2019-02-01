@@ -46,12 +46,11 @@ module Payments
       end
 
       def load(stream_name, event_store:)
-        events = event_store.read.stream(stream_name).forward.each
-        events.each do |event|
+        event_store.read.stream(stream_name).forward.each do |event|
           apply(event)
+          @version += 1
         end
 
-        @version           = events.size - 1
         @event_ids_to_link = []
       end
 

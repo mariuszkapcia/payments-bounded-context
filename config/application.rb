@@ -16,8 +16,8 @@ module PaymentsBoundedContext
     config.paths.add 'orders/lib',   eager_load: true
     config.paths.add 'ui/lib',       eager_load: true
 
-    config.payment_gateway_fallback_configuration = {
-      max_failed_payments_count: 12
-    }
+    config.payment_gateway_fallback_configuration = OpenStruct.new(
+      max_failed_payments_count: 15
+    )
   end
 end
