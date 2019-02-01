@@ -25,6 +25,9 @@ module Payments
     end
 
     def switch_to_fallback(payment_gateway_identifier)
+      payment_gateway = find_payment_gateway(payment_gateway_identifier)
+      raise InvalidOperation if payment_gateway[:fallback_identifier].nil?
+
       apply(Payments::PaymentGatewaySwitchedToFallback.strict(data: {
         payment_gateway_identifier: payment_gateway_identifier
       }))
@@ -36,9 +39,14 @@ module Payments
       @payment_gateways.any? { |gateway| gateway[:identifier] == identifier }
     end
 
+    def find_payment_gateway(identifier)
+      @payment_gateways.find { |gateway| gateway[:identifier] == identifier }
+    end
+
     def apply_payment_gateway_registered(event)
       @payment_gateways << {
-        identifier: event.data[:payment_gateway_identifier]
+        identifier:          event.data[:payment_gateway_identifier],
+        fallback_identifier: event.data[:fallback_identifier]
       }
     end
 

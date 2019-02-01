@@ -3,7 +3,7 @@ module Payments
     SCHEMA = {
       payment_gateway_identifier: String,
       adapter:                    String,
-      fallback_identifier:        String
+      fallback_identifier:        [String, NilClass]
     }.freeze
 
     def self.strict(data:)

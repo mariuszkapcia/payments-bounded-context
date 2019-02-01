@@ -38,6 +38,15 @@ module Payments
       expect(payment_gateway_configuration).to(have_applied(payment_gateway_swtiched_to_fallback))
     end
 
+    specify 'there is no fallback gateway to switch' do
+      payment_gateway_configuration = PaymentGatewayConfiguration.new
+      payment_gateway_configuration.register(payment_gateway_identifier, adapter, nil)
+
+      expect do
+        payment_gateway_configuration.switch_to_fallback(payment_gateway_identifier)
+      end.to raise_error(PaymentGatewayConfiguration::InvalidOperation)
+    end
+
     private
 
     def payment_gateway_registered
