@@ -24,6 +24,7 @@ module Payments
       }))
     end
 
+    # NOTE: Another approach would be to publish error domain event here.
     def switch_to_fallback(payment_gateway_identifier)
       payment_gateway = find_payment_gateway(payment_gateway_identifier)
       raise InvalidOperation if payment_gateway[:fallback_identifier].nil?
