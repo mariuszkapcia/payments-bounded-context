@@ -33,6 +33,21 @@ module UI
           },
           timestamp: event.metadata[:time]
         )
+      when Payments::RefundSucceeded
+        add_transaction(
+          order_data: {
+            order_number: event.data[:order_number],
+            amount:       -event.data[:amount],
+            currency:     event.data[:currency]
+          },
+          transaction_data: {
+            transaction_identifier:                 event.data[:transaction_identifier],
+            payment_gateway_identifier:             event.data[:payment_gateway_identifier],
+            payment_gateway_transaction_identifier: event.data[:payment_gateway_transaction_identifier],
+            type:                                   'refund'
+          },
+          timestamp: event.metadata[:time]
+        )
       end
     end
 

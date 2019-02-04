@@ -10,6 +10,11 @@ module UI
       read_model.call(capture_succeeded)
       expect(read_model.all.size).to eq(2)
       assert_captured_transaction
+
+      read_model.call(refund_succeeded)
+      read_model.call(refund_succeeded)
+      expect(read_model.all.size).to eq(4)
+      assert_refunded_transactions
     end
 
     private
@@ -34,6 +39,24 @@ module UI
       expect(second_transaction.entry_type).to eq('capture')
     end
 
+    def assert_refunded_transactions
+      expect(third_transaction.order_number).to eq(order_number)
+      expect(third_transaction.amount).to eq(-partial_amount)
+      expect(third_transaction.currency).to eq(currency)
+      expect(third_transaction.identifier).to eq(transaction_identifier)
+      expect(third_transaction.payment_gateway_identifier).to eq(payment_gateway_identifier)
+      expect(third_transaction.payment_gateway_transaction_identifier).to eq(payment_gateway_transaction_identifier)
+      expect(third_transaction.entry_type).to eq('refund')
+
+      expect(fourth_transaction.order_number).to eq(order_number)
+      expect(fourth_transaction.amount).to eq(-partial_amount)
+      expect(fourth_transaction.currency).to eq(currency)
+      expect(fourth_transaction.identifier).to eq(transaction_identifier)
+      expect(fourth_transaction.payment_gateway_identifier).to eq(payment_gateway_identifier)
+      expect(fourth_transaction.payment_gateway_transaction_identifier).to eq(payment_gateway_transaction_identifier)
+      expect(fourth_transaction.entry_type).to eq('refund')
+    end
+
     def authorization_succeeded
       Payments::AuthorizationSucceeded.new(data: {
         transaction_identifier:                 transaction_identifier,
@@ -56,6 +79,17 @@ module UI
       })
     end
 
+    def refund_succeeded
+      Payments::RefundSucceeded.new(data: {
+        transaction_identifier:                 transaction_identifier,
+        payment_gateway_transaction_identifier: payment_gateway_transaction_identifier,
+        payment_gateway_identifier:             payment_gateway_identifier,
+        order_number:                           order_number,
+        amount:                                 partial_amount,
+        currency:                               currency
+      })
+    end
+
     def order_uuid
       'order_uuid'
     end
@@ -66,6 +100,10 @@ module UI
 
     def amount
       100
+    end
+
+    def partial_amount
+      50
     end
 
     def currency
@@ -94,6 +132,14 @@ module UI
 
     def second_transaction
       read_model.all.second
+    end
+
+    def third_transaction
+      read_model.all.third
+    end
+
+    def fourth_transaction
+      read_model.all.fourth
     end
   end
 end
