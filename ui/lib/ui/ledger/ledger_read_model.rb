@@ -17,7 +17,7 @@ module UI
     end
 
     def all
-      UI::Ledger::Transaction.where(state: 'captured')
+      UI::Ledger::Transaction.where(entry_type: 'capture')
     end
 
     private
@@ -34,15 +34,15 @@ module UI
         identifier:                             trx_identifier,
         payment_gateway_identifier:             gateway_identifier,
         payment_gateway_transaction_identifier: gateway_trx_identifier,
-        state:                                  'authorized'
+        entry_type:                             'authorization'
       )
     end
 
     def capture_transaction(transaction_identifier, timestamp)
-      transaction       = UI::Ledger::Transaction.find_by(identifier: transaction_identifier, state: 'authorized')
+      transaction = UI::Ledger::Transaction.find_by(identifier: transaction_identifier, entry_type: 'authorization')
 
-      transaction.state     = 'captured'
-      transaction.timestamp = timestamp
+      transaction.entry_type = 'capture'
+      transaction.timestamp  = timestamp
 
       transaction.save!
     end

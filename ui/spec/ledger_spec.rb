@@ -21,7 +21,7 @@ module UI
       expect(first_transaction.identifier).to eq(transaction_identifier)
       expect(first_transaction.payment_gateway_identifier).to eq(payment_gateway_identifier)
       expect(first_transaction.payment_gateway_transaction_identifier).to eq(payment_gateway_transaction_identifier)
-      expect(first_transaction.state).to eq('captured')
+      expect(first_transaction.entry_type).to eq('capture')
     end
 
     def authorization_succeeded
