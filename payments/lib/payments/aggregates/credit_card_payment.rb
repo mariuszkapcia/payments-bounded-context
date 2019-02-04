@@ -9,6 +9,8 @@ module Payments
       @payment_gateway_transaction_identifier = nil
       @payment_gateway                        = payment_gateway
       @order_number                           = nil
+      @amount                                 = nil
+      @currency                               = nil
       @state                                  = :none
     end
 
@@ -33,6 +35,7 @@ module Payments
       }))
     end
 
+    # NOTE: We can pass amount and curreny here to support multi captures if needed.
     def capture
       raise InvalidOperation unless authorized?
       raise InvalidOperation if captured?
@@ -42,7 +45,9 @@ module Payments
       apply(Payments::CaptureSucceeded.strict(data: {
         transaction_identifier:     @transaction_identifier,
         payment_gateway_identifier: @payment_gateway.identifier,
-        order_number:               @order_number
+        order_number:               @order_number,
+        amount:                     @amount,
+        currency:                   @currency
       }))
     rescue PaymentGatewayCaptureFailed
       apply(Payments::CaptureFailed.strict(data: {
@@ -89,6 +94,8 @@ module Payments
       @transaction_identifier                 = event.data[:transaction_identifier]
       @payment_gateway_transaction_identifier = event.data[:payment_gateway_transaction_identifier]
       @order_number                           = event.data[:order_number]
+      @amount                                 = event.data[:amount]
+      @currency                               = event.data[:currency]
       @state                                  = :authorized
     end
 

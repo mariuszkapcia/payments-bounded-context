@@ -28,7 +28,9 @@ module Payments
       {
         transaction_identifier:     transaction_identifier,
         payment_gateway_identifier: kind_of(String),
-        order_number:               order_number
+        order_number:               order_number,
+        amount:                     amount,
+        currency:                   currency
       }
     end
 
