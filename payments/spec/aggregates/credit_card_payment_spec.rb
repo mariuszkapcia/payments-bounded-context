@@ -111,8 +111,8 @@ module Payments
     end
 
     specify 'full payment refund' do
-      payment_gateway     = fake_payment_gateway(broken: false)
-      credit_card_payment = CreditCardPayment.new(transaction_identifier, payment_gateway: payment_gateway)
+      payment_gateway_list = fake_payment_gateway_list(broken: false)
+      credit_card_payment  = CreditCardPayment.new(transaction_identifier, payment_gateway_list: payment_gateway_list)
       credit_card_payment.authorize(credit_card_token, amount, currency, order_number)
       credit_card_payment.capture
       credit_card_payment.refund(amount)
@@ -121,8 +121,8 @@ module Payments
     end
 
     specify 'cannot refund not captured payment' do
-      payment_gateway     = fake_payment_gateway(broken: false)
-      credit_card_payment = CreditCardPayment.new(transaction_identifier, payment_gateway: payment_gateway)
+      payment_gateway_list = fake_payment_gateway_list(broken: false)
+      credit_card_payment  = CreditCardPayment.new(transaction_identifier, payment_gateway_list: payment_gateway_list)
 
       expect do
         credit_card_payment.refund(amount)
@@ -130,8 +130,8 @@ module Payments
     end
 
     specify 'mutli refund' do
-      payment_gateway     = fake_payment_gateway(broken: false)
-      credit_card_payment = CreditCardPayment.new(transaction_identifier, payment_gateway: payment_gateway)
+      payment_gateway_list = fake_payment_gateway_list(broken: false)
+      credit_card_payment  = CreditCardPayment.new(transaction_identifier, payment_gateway_list: payment_gateway_list)
       credit_card_payment.authorize(credit_card_token, amount, currency, order_number)
       credit_card_payment.capture
       credit_card_payment.refund(10)
@@ -141,8 +141,8 @@ module Payments
     end
 
     specify 'cannot refund more than captured' do
-      payment_gateway     = fake_payment_gateway(broken: false)
-      credit_card_payment = CreditCardPayment.new(transaction_identifier, payment_gateway: payment_gateway)
+      payment_gateway_list = fake_payment_gateway_list(broken: false)
+      credit_card_payment  = CreditCardPayment.new(transaction_identifier, payment_gateway_list: payment_gateway_list)
       credit_card_payment.authorize(credit_card_token, amount, currency, order_number)
       credit_card_payment.capture
 
@@ -247,7 +247,7 @@ module Payments
       {
         transaction_identifier:                 transaction_identifier,
         payment_gateway_transaction_identifier: kind_of(String),
-        payment_gateway_identifier:             fake_payment_gateway.identifier,
+        payment_gateway_identifier:             'fake',
         order_number:                           order_number,
         amount:                                 amount,
         currency:                               currency
@@ -258,7 +258,7 @@ module Payments
       {
         transaction_identifier:                 transaction_identifier,
         payment_gateway_transaction_identifier: kind_of(String),
-        payment_gateway_identifier:             fake_payment_gateway.identifier,
+        payment_gateway_identifier:             'fake',
         order_number:                           order_number,
         amount:                                 partial_amount,
         currency:                               currency
@@ -268,7 +268,7 @@ module Payments
     def refund_failed_data
       {
         transaction_identifier:     transaction_identifier,
-        payment_gateway_identifier: fake_payment_gateway.identifier,
+        payment_gateway_identifier: 'fake',
         order_number:               order_number
       }
     end

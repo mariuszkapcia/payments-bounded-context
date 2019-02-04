@@ -93,11 +93,12 @@ module Payments
       raise InvalidOperation unless captured? || refunded?
       raise InvalidOperation if @refunded_amount + amount > @amount
 
-      @payment_gateway.refund(@payment_gateway_transaction_identifier, amount)
+      payment_gateway = @payment_gateway_list.find(@payment_gateway_identifier)
+      payment_gateway.refund(@payment_gateway_transaction_identifier, amount)
 
       apply(Payments::RefundSucceeded.strict(data: {
         transaction_identifier:                 @transaction_identifier,
-        payment_gateway_identifier:             @payment_gateway.identifier,
+        payment_gateway_identifier:             payment_gateway.identifier,
         payment_gateway_transaction_identifier: @payment_gateway_transaction_identifier,
         order_number:                           @order_number,
         amount:                                 amount,
@@ -106,7 +107,7 @@ module Payments
     rescue PaymentGatewayRefundFailed
       apply(Payments::RefundFailed.strict(data: {
         transaction_identifier:     @transaction_identifier,
-        payment_gateway_identifier: @payment_gateway.identifier,
+        payment_gateway_identifier: payment_gateway.identifier,
         order_number:               @order_number
       }))
     end

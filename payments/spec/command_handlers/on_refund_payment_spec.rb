@@ -1,9 +1,13 @@
 require_dependency 'payments'
 
+require_relative '../support/fakes'
+
 module Payments
   RSpec.describe 'OnRefundPayment command handler' do
+    include Fakes
+
     specify 'refund payment' do
-      command_bus = command_bus_factory
+      command_bus = command_bus_factory(payment_gateway_list: Fakes::PaymentGatewayList.new)
       command_bus.call(AuthorizeCreditCard.new(
         transaction_identifier: transaction_identifier,
         credit_card_token:      credit_card_token,
@@ -48,7 +52,7 @@ module Payments
     end
 
     def amount
-      0
+      100
     end
 
     def currency
@@ -65,11 +69,20 @@ module Payments
       end
     end
 
-    def command_bus_factory
+    def command_bus_factory(payment_gateway_list:)
       Arkency::CommandBus.new.tap do |bus|
-        bus.register(AuthorizeCreditCard, OnAuthorizeCreditCard.new(event_store))
-        bus.register(CaptureAuthorization, OnCaptureAuthorization.new(event_store))
-        bus.register(RefundPayment, OnRefundPayment.new(event_store))
+        bus.register(AuthorizeCreditCard, OnAuthorizeCreditCard.new(
+          event_store,
+          payment_gateway_list: payment_gateway_list
+        ))
+        bus.register(CaptureAuthorization, OnCaptureAuthorization.new(
+          event_store,
+          payment_gateway_list: payment_gateway_list
+        ))
+        bus.register(RefundPayment, OnRefundPayment.new(
+          event_store,
+          payment_gateway_list: payment_gateway_list
+        ))
       end
     end
   end
