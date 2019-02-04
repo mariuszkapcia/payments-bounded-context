@@ -34,6 +34,14 @@ module Payments
       true
     end
 
+    def refund(transaction_identifier)
+      transaction = Transaction.find_by(identifier: transaction_identifier, state: ['captured', 'refunded'])
+      raise PaymentGatewayRefundFailed unless transaction
+      transaction.state = 'refunded'
+      transaction.save!
+      true
+    end
+
     def identifier
       'mastercard'
     end

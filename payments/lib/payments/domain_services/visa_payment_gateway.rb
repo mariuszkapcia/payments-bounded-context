@@ -2,6 +2,7 @@ module Payments
   PaymentGatewayAuthorizationFailed = Class.new(StandardError)
   PaymentGatewayCaptureFailed       = Class.new(StandardError)
   PaymentGatewayVoidFailed          = Class.new(StandardError)
+  PaymentGatewayRefundFailed        = Class.new(StandardError)
 
   class VisaPaymentGateway
     # NOTE: We need it because we have a fake payment gateway and we need a place to store transactions information.
@@ -32,8 +33,16 @@ module Payments
 
     def void(transaction_identifier)
       transaction = Transaction.find_by(identifier: transaction_identifier, state: 'authorized')
-      raise PaymentGatewayVoidFailed unless transaction
+      raise PaymentGatewayRefundFailed unless transaction
       transaction.state = 'voided'
+      transaction.save!
+      true
+    end
+
+    def refund(transaction_identifier)
+      transaction = Transaction.find_by(identifier: transaction_identifier, state: ['captured', 'refunded'])
+      raise PaymentGatewayRefundFailed unless transaction
+      transaction.state = 'refunded'
       transaction.save!
       true
     end
