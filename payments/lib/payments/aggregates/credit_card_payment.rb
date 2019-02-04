@@ -21,7 +21,9 @@ module Payments
         transaction_identifier:                 @transaction_identifier,
         payment_gateway_transaction_identifier: payment_gateway_transaction_identifier,
         payment_gateway_identifier:             @payment_gateway.identifier,
-        order_number:                           order_number
+        order_number:                           order_number,
+        amount:                                 amount,
+        currency:                               currency
       }))
     rescue PaymentGatewayAuthorizationFailed
       apply(Payments::AuthorizationFailed.strict(data: {
