@@ -2,11 +2,11 @@ module UI
   class LedgerReadModel
     def call(event)
       case event
-      when Orders::OrderSubmitted
-        add_order(event.data[:order_number], event.data[:gross_value], event.data[:currency])
       when Payments::AuthorizationSucceeded
         add_transaction_information(
           event.data[:order_number],
+          event.data[:amount],
+          event.data[:currency],
           event.data[:transaction_identifier],
           event.data[:payment_gateway_identifier],
           event.data[:payment_gateway_transaction_identifier]
@@ -26,15 +26,24 @@ module UI
       UI::Ledger::Transaction.create!(order_number: order_number, amount: amount, currency: currency)
     end
 
-    def add_transaction_information(order_number, trx_identifier, gateway_identifier, gateway_trx_identifier)
-      transaction = UI::Ledger::Transaction.find_by(order_number: order_number)
+    def add_transaction_information(order_number, amount, currency, trx_identifier, gateway_identifier, gateway_trx_identifier)
+      UI::Ledger::Transaction.create!(
+        order_number:                           order_number,
+        amount:                                 amount,
+        currency:                               currency,
+        identifier:                             trx_identifier,
+        payment_gateway_identifier:             gateway_identifier,
+        payment_gateway_transaction_identifier: gateway_trx_identifier,
+        state:                                  'authorized'
+      )
+      # transaction = UI::Ledger::Transaction.find_by(order_number: order_number)
 
-      transaction.identifier                             = trx_identifier
-      transaction.payment_gateway_identifier             = gateway_identifier
-      transaction.payment_gateway_transaction_identifier = gateway_trx_identifier
-      transaction.state                                  = 'authorized'
+      # transaction.identifier                             = trx_identifier
+      # transaction.payment_gateway_identifier             = gateway_identifier
+      # transaction.payment_gateway_transaction_identifier = gateway_trx_identifier
+      # transaction.state                                  = 'authorized'
 
-      transaction.save!
+      # transaction.save!
     end
 
     def capture_transaction(transaction_identifier, timestamp)
