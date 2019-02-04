@@ -14,7 +14,6 @@ Rails.configuration.to_prepare do
   event_store.subscribe(
     UI::LedgerReadModel,
     to: [
-      Orders::OrderSubmitted,
       Payments::AuthorizationSucceeded,
       Payments::CaptureSucceeded
     ]
