@@ -43,11 +43,12 @@ module Payments
       @payment_gateway.capture(@payment_gateway_transaction_identifier)
 
       apply(Payments::CaptureSucceeded.strict(data: {
-        transaction_identifier:     @transaction_identifier,
-        payment_gateway_identifier: @payment_gateway.identifier,
-        order_number:               @order_number,
-        amount:                     @amount,
-        currency:                   @currency
+        transaction_identifier:                 @transaction_identifier,
+        payment_gateway_identifier:             @payment_gateway.identifier,
+        payment_gateway_transaction_identifier: @payment_gateway_transaction_identifier,
+        order_number:                           @order_number,
+        amount:                                 @amount,
+        currency:                               @currency
       }))
     rescue PaymentGatewayCaptureFailed
       apply(Payments::CaptureFailed.strict(data: {

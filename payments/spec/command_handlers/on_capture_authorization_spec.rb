@@ -26,11 +26,12 @@ module Payments
 
     def capture_succeeded_data
       {
-        transaction_identifier:     transaction_identifier,
-        payment_gateway_identifier: kind_of(String),
-        order_number:               order_number,
-        amount:                     amount,
-        currency:                   currency
+        transaction_identifier:                 transaction_identifier,
+        payment_gateway_identifier:             kind_of(String),
+        payment_gateway_transaction_identifier: kind_of(String),
+        order_number:                           order_number,
+        amount:                                 amount,
+        currency:                               currency
       }
     end
 
