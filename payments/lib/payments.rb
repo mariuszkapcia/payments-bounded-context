@@ -6,6 +6,7 @@ require_dependency 'payments/aggregates/credit_card_payment.rb'
 require_dependency 'payments/command_handlers/on_authorize_credit_card.rb'
 require_dependency 'payments/command_handlers/on_capture_authorization.rb'
 require_dependency 'payments/command_handlers/on_void_authorization.rb'
+require_dependency 'payments/command_handlers/on_refund_payment.rb'
 
 require_dependency 'payments/commands/authorize_credit_card.rb'
 require_dependency 'payments/commands/capture_authorization.rb'
