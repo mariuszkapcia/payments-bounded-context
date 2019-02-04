@@ -168,7 +168,9 @@ module Payments
         transaction_identifier:                 transaction_identifier,
         payment_gateway_transaction_identifier: kind_of(String),
         payment_gateway_identifier:             fake_payment_gateway.identifier,
-        order_number:                           order_number
+        order_number:                           order_number,
+        amount:                                 amount,
+        currency:                               currency
       }
     end
 
