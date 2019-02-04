@@ -36,14 +36,6 @@ module UI
         payment_gateway_transaction_identifier: gateway_trx_identifier,
         state:                                  'authorized'
       )
-      # transaction = UI::Ledger::Transaction.find_by(order_number: order_number)
-
-      # transaction.identifier                             = trx_identifier
-      # transaction.payment_gateway_identifier             = gateway_identifier
-      # transaction.payment_gateway_transaction_identifier = gateway_trx_identifier
-      # transaction.state                                  = 'authorized'
-
-      # transaction.save!
     end
 
     def capture_transaction(transaction_identifier, timestamp)
