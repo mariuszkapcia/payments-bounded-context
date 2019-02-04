@@ -9,7 +9,8 @@ module Payments
       @payment_gateway_transaction_identifier = nil
       @payment_gateway                        = payment_gateway
       @order_number                           = nil
-      @amount                                 = nil
+      @amount                                 = 0
+      @refunded_amount                        = 0
       @currency                               = nil
       @state                                  = :none
     end
@@ -77,6 +78,28 @@ module Payments
       }))
     end
 
+    def refund(amount)
+      raise InvalidOperation unless captured? || refunded?
+      raise InvalidOperation if @refunded_amount + amount > @amount
+
+      @payment_gateway.refund(@payment_gateway_transaction_identifier, amount)
+
+      apply(Payments::RefundSucceeded.strict(data: {
+        transaction_identifier:                 @transaction_identifier,
+        payment_gateway_identifier:             @payment_gateway.identifier,
+        payment_gateway_transaction_identifier: @payment_gateway_transaction_identifier,
+        order_number:                           @order_number,
+        amount:                                 amount,
+        currency:                               @currency
+      }))
+    rescue PaymentGatewayRefundFailed
+      apply(Payments::RefundFailed.strict(data: {
+        transaction_identifier:     @transaction_identifier,
+        payment_gateway_identifier: @payment_gateway.identifier,
+        order_number:               @order_number
+      }))
+    end
+
     private
 
     def authorized?
@@ -89,6 +112,10 @@ module Payments
 
     def voided?
       @state == :voided
+    end
+
+    def refunded?
+      @state == :refunded
     end
 
     def apply_authorization_succeeded(event)
@@ -115,6 +142,14 @@ module Payments
     end
 
     def apply_void_failed(event)
+    end
+
+    def apply_refund_succeeded(event)
+      @refunded_amount += event.data[:amount]
+      @state            = :refunded
+    end
+
+    def apply_refund_failed(event)
     end
   end
 end

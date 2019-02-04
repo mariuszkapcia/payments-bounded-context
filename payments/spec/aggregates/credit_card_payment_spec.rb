@@ -17,6 +17,11 @@ module Payments
       true
     end
 
+    def refund(transaction_identifier, amount)
+      raise PaymentGatewayRefundFailed if @broken
+      true
+    end
+
     def identifier
       'fake'
     end
@@ -137,6 +142,47 @@ module Payments
       end.to raise_error(CreditCardPayment::InvalidOperation)
     end
 
+    specify 'full payment refund' do
+      payment_gateway     = fake_payment_gateway(broken: false)
+      credit_card_payment = CreditCardPayment.new(transaction_identifier, payment_gateway: payment_gateway)
+      credit_card_payment.authorize(credit_card_token, amount, currency, order_number)
+      credit_card_payment.capture
+      credit_card_payment.refund(amount)
+
+      expect(credit_card_payment).to(have_applied(refund_succeeded))
+    end
+
+    specify 'cannot refund not captured payment' do
+      payment_gateway     = fake_payment_gateway(broken: false)
+      credit_card_payment = CreditCardPayment.new(transaction_identifier, payment_gateway: payment_gateway)
+
+      expect do
+        credit_card_payment.refund(amount)
+      end.to raise_error(CreditCardPayment::InvalidOperation)
+    end
+
+    specify 'mutli refund' do
+      payment_gateway     = fake_payment_gateway(broken: false)
+      credit_card_payment = CreditCardPayment.new(transaction_identifier, payment_gateway: payment_gateway)
+      credit_card_payment.authorize(credit_card_token, amount, currency, order_number)
+      credit_card_payment.capture
+      credit_card_payment.refund(10)
+      credit_card_payment.refund(10)
+
+      expect(credit_card_payment).to(have_applied(partial_refund_succeeded).exactly(2).times)
+    end
+
+    specify 'cannot refund more than captured' do
+      payment_gateway     = fake_payment_gateway(broken: false)
+      credit_card_payment = CreditCardPayment.new(transaction_identifier, payment_gateway: payment_gateway)
+      credit_card_payment.authorize(credit_card_token, amount, currency, order_number)
+      credit_card_payment.capture
+
+      expect do
+        credit_card_payment.refund(amount + 10)
+      end.to raise_error(CreditCardPayment::InvalidOperation)
+    end
+
     private
 
     def authorization_succeeded
@@ -161,6 +207,18 @@ module Payments
 
     def void_failed
       an_event(Payments::VoidFailed).with_data(void_failed_data).strict
+    end
+
+    def refund_succeeded
+      an_event(Payments::RefundSucceeded).with_data(refund_succeeded_data).strict
+    end
+
+    def partial_refund_succeeded
+      an_event(Payments::RefundSucceeded).with_data(partial_refund_succeeded_data).strict
+    end
+
+    def refund_failed
+      an_event(Payments::RefundFailed).with_data(refund_failed_data).strict
     end
 
     def authorization_succeeded_data
@@ -217,6 +275,36 @@ module Payments
       }
     end
 
+    def refund_succeeded_data
+      {
+        transaction_identifier:                 transaction_identifier,
+        payment_gateway_transaction_identifier: kind_of(String),
+        payment_gateway_identifier:             fake_payment_gateway.identifier,
+        order_number:                           order_number,
+        amount:                                 amount,
+        currency:                               currency
+      }
+    end
+
+    def partial_refund_succeeded_data
+      {
+        transaction_identifier:                 transaction_identifier,
+        payment_gateway_transaction_identifier: kind_of(String),
+        payment_gateway_identifier:             fake_payment_gateway.identifier,
+        order_number:                           order_number,
+        amount:                                 partial_amount,
+        currency:                               currency
+      }
+    end
+
+    def refund_failed_data
+      {
+        transaction_identifier:     transaction_identifier,
+        payment_gateway_identifier: fake_payment_gateway.identifier,
+        order_number:               order_number
+      }
+    end
+
     def transaction_identifier
       'transaction_identifier'
     end
@@ -226,7 +314,11 @@ module Payments
     end
 
     def amount
-      0
+      100
+    end
+
+    def partial_amount
+      10
     end
 
     def currency
